@@ -15,9 +15,10 @@ P = 20e5
 V = 0.721 # 0.362 + 0.359, total tank volume
 T = 290
 R = 8.31446261815324
-ntanks = 2
+ntanks = 1
 
 #ti-6al-4v-grade-5
+# Yield strength is reduced by a safety factor of 1.25
 sigma = 880e6
 density = 4430
 
