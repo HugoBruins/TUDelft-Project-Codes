@@ -4,4 +4,4 @@ This folder contains all the GMAT scripts I made for Project. To run them, open 
 
 For now the only script in here is the Earth to Mars transfer and capture script including stationkeeping.
 
-Aditionally, there is a quick ADSEE II script that I designed to analyze the equatorial shift of the given CAPSTONE mission as the payload swath angle seemed way too big.
+Aditionally, there is a quick ADSEE II script that I designed to analyze the equatorial shift of the given CAPSTONE mission as the payload swath angle seemed way too big. Note that for the CAPSTONE mission it is nowhere near as complicated as the original orbit, as it is a simplified 1600 km circular polar orbit.
