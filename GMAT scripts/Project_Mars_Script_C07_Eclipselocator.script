@@ -1,0 +1,509 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2022-09-08 08:17:32
+
+
+%----------------------------------------
+%---------- Solar System User-Modified Values
+%----------------------------------------
+
+GMAT SolarSystem.EphemerisSource = 'SPICE';
+GMAT SolarSystem.SPKFilename = 'C:/Users/hugob/Documents/GMAT/bin/../data/planetary_ephem/spk/DE421AllPlanets.bsp';
+
+%----------------------------------------
+%---------- Solar System User-Modified Values
+%----------------------------------------
+
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft SpacecraftC07;
+GMAT SpacecraftC07.DateFormat = UTCGregorian;
+GMAT SpacecraftC07.Epoch = '23 Oct 2026 03:00:00.000';
+GMAT SpacecraftC07.CoordinateSystem = EarthMJ2000Eq;
+GMAT SpacecraftC07.DisplayStateType = Keplerian;
+GMAT SpacecraftC07.SMA = 6577.999999999997;
+GMAT SpacecraftC07.ECC = 1.231923140243473e-15;
+GMAT SpacecraftC07.INC = 28.40000000000002;
+GMAT SpacecraftC07.RAAN = 343.2000000000006;
+GMAT SpacecraftC07.AOP = 0;
+GMAT SpacecraftC07.TA = 300.0783008680431;
+GMAT SpacecraftC07.DryMass = 850;
+GMAT SpacecraftC07.Cd = 2.2;
+GMAT SpacecraftC07.Cr = 1.8;
+GMAT SpacecraftC07.DragArea = 15;
+GMAT SpacecraftC07.SRPArea = 1;
+GMAT SpacecraftC07.SPADDragScaleFactor = 1;
+GMAT SpacecraftC07.SPADSRPScaleFactor = 1;
+GMAT SpacecraftC07.NAIFId = -10000001;
+GMAT SpacecraftC07.NAIFIdReferenceFrame = -9000001;
+GMAT SpacecraftC07.OrbitColor = Red;
+GMAT SpacecraftC07.TargetColor = Teal;
+GMAT SpacecraftC07.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT SpacecraftC07.CdSigma = 1e+70;
+GMAT SpacecraftC07.CrSigma = 1e+70;
+GMAT SpacecraftC07.Id = 'SatId';
+GMAT SpacecraftC07.Attitude = CoordinateSystemFixed;
+GMAT SpacecraftC07.SPADSRPInterpolationMethod = Bilinear;
+GMAT SpacecraftC07.SPADSRPScaleFactorSigma = 1e+70;
+GMAT SpacecraftC07.SPADDragInterpolationMethod = Bilinear;
+GMAT SpacecraftC07.SPADDragScaleFactorSigma = 1e+70;
+GMAT SpacecraftC07.ModelFile = 'aura.3ds';
+GMAT SpacecraftC07.ModelOffsetX = 0;
+GMAT SpacecraftC07.ModelOffsetY = 0;
+GMAT SpacecraftC07.ModelOffsetZ = 0;
+GMAT SpacecraftC07.ModelRotationX = 0;
+GMAT SpacecraftC07.ModelRotationY = 0;
+GMAT SpacecraftC07.ModelRotationZ = 0;
+GMAT SpacecraftC07.ModelScale = 1;
+GMAT SpacecraftC07.AttitudeDisplayStateType = 'Quaternion';
+GMAT SpacecraftC07.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT SpacecraftC07.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT SpacecraftC07.EulerAngleSequence = '321';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel NearEarth_ForceModel;
+GMAT NearEarth_ForceModel.CentralBody = Earth;
+GMAT NearEarth_ForceModel.PrimaryBodies = {Earth};
+GMAT NearEarth_ForceModel.PointMasses = {Luna, Sun};
+GMAT NearEarth_ForceModel.Drag = None;
+GMAT NearEarth_ForceModel.SRP = Off;
+GMAT NearEarth_ForceModel.RelativisticCorrection = Off;
+GMAT NearEarth_ForceModel.ErrorControl = RSSStep;
+GMAT NearEarth_ForceModel.GravityField.Earth.Degree = 8;
+GMAT NearEarth_ForceModel.GravityField.Earth.Order = 8;
+GMAT NearEarth_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT NearEarth_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT NearEarth_ForceModel.GravityField.Earth.TideModel = 'None';
+
+Create ForceModel DeepSpace_ForceModel;
+GMAT DeepSpace_ForceModel.CentralBody = Earth;
+GMAT DeepSpace_ForceModel.PointMasses = {Earth, Jupiter, Luna, Mars, Neptune, Saturn, Sun, Uranus, Venus};
+GMAT DeepSpace_ForceModel.Drag = None;
+GMAT DeepSpace_ForceModel.SRP = On;
+GMAT DeepSpace_ForceModel.RelativisticCorrection = Off;
+GMAT DeepSpace_ForceModel.ErrorControl = RSSStep;
+GMAT DeepSpace_ForceModel.SRP.Flux = 1367;
+GMAT DeepSpace_ForceModel.SRP.SRPModel = Spherical;
+GMAT DeepSpace_ForceModel.SRP.Nominal_Sun = 149597870.691;
+
+Create ForceModel NearMars_ForceModel;
+GMAT NearMars_ForceModel.CentralBody = Mars;
+GMAT NearMars_ForceModel.PrimaryBodies = {Mars};
+GMAT NearMars_ForceModel.PointMasses = {Sun};
+GMAT NearMars_ForceModel.Drag = None;
+GMAT NearMars_ForceModel.SRP = On;
+GMAT NearMars_ForceModel.RelativisticCorrection = Off;
+GMAT NearMars_ForceModel.ErrorControl = RSSStep;
+GMAT NearMars_ForceModel.GravityField.Mars.Degree = 8;
+GMAT NearMars_ForceModel.GravityField.Mars.Order = 8;
+GMAT NearMars_ForceModel.GravityField.Mars.StmLimit = 100;
+GMAT NearMars_ForceModel.GravityField.Mars.PotentialFile = 'Mars50c.cof';
+GMAT NearMars_ForceModel.GravityField.Mars.TideModel = 'None';
+GMAT NearMars_ForceModel.SRP.Flux = 1367;
+GMAT NearMars_ForceModel.SRP.SRPModel = Spherical;
+GMAT NearMars_ForceModel.SRP.Nominal_Sun = 149597870.691;
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator NearEarth;
+GMAT NearEarth.FM = NearEarth_ForceModel;
+GMAT NearEarth.Type = RungeKutta89;
+GMAT NearEarth.InitialStepSize = 600;
+GMAT NearEarth.Accuracy = 1e-13;
+GMAT NearEarth.MinStep = 0;
+GMAT NearEarth.MaxStep = 600;
+GMAT NearEarth.MaxStepAttempts = 50;
+GMAT NearEarth.StopIfAccuracyIsViolated = true;
+
+Create Propagator DeepSpace;
+GMAT DeepSpace.FM = DeepSpace_ForceModel;
+GMAT DeepSpace.Type = PrinceDormand78;
+GMAT DeepSpace.InitialStepSize = 60;
+GMAT DeepSpace.Accuracy = 1e-12;
+GMAT DeepSpace.MinStep = 0;
+GMAT DeepSpace.MaxStep = 864000;
+GMAT DeepSpace.MaxStepAttempts = 50;
+GMAT DeepSpace.StopIfAccuracyIsViolated = true;
+
+Create Propagator NearMars;
+GMAT NearMars.FM = NearMars_ForceModel;
+GMAT NearMars.Type = PrinceDormand78;
+GMAT NearMars.InitialStepSize = 600;
+GMAT NearMars.Accuracy = 1e-10;
+GMAT NearMars.MinStep = 0;
+GMAT NearMars.MaxStep = 86400;
+GMAT NearMars.MaxStepAttempts = 50;
+GMAT NearMars.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn EjectionBurn;
+GMAT EjectionBurn.CoordinateSystem = Local;
+GMAT EjectionBurn.Origin = Earth;
+GMAT EjectionBurn.Axes = VNB;
+GMAT EjectionBurn.Element1 = 3.67;
+GMAT EjectionBurn.Element2 = 0;
+GMAT EjectionBurn.Element3 = 0;
+GMAT EjectionBurn.DecrementMass = false;
+GMAT EjectionBurn.Isp = 300;
+GMAT EjectionBurn.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn CorrectionBurn;
+GMAT CorrectionBurn.CoordinateSystem = SunElliptic;
+GMAT CorrectionBurn.Element1 = 0;
+GMAT CorrectionBurn.Element2 = 0;
+GMAT CorrectionBurn.Element3 = 0;
+GMAT CorrectionBurn.DecrementMass = false;
+GMAT CorrectionBurn.Isp = 300;
+GMAT CorrectionBurn.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn MarsCapture;
+GMAT MarsCapture.CoordinateSystem = Local;
+GMAT MarsCapture.Origin = Mars;
+GMAT MarsCapture.Axes = VNB;
+GMAT MarsCapture.Element1 = 0;
+GMAT MarsCapture.Element2 = 0;
+GMAT MarsCapture.Element3 = 0;
+GMAT MarsCapture.DecrementMass = false;
+GMAT MarsCapture.Isp = 300;
+GMAT MarsCapture.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn StationKeepBurnPer;
+GMAT StationKeepBurnPer.CoordinateSystem = Local;
+GMAT StationKeepBurnPer.Origin = Mars;
+GMAT StationKeepBurnPer.Axes = VNB;
+GMAT StationKeepBurnPer.Element1 = 0;
+GMAT StationKeepBurnPer.Element2 = 0;
+GMAT StationKeepBurnPer.Element3 = 0;
+GMAT StationKeepBurnPer.DecrementMass = false;
+GMAT StationKeepBurnPer.Isp = 300;
+GMAT StationKeepBurnPer.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn StationKeepBurnAp;
+GMAT StationKeepBurnAp.CoordinateSystem = Local;
+GMAT StationKeepBurnAp.Origin = Mars;
+GMAT StationKeepBurnAp.Axes = VNB;
+GMAT StationKeepBurnAp.Element1 = 0;
+GMAT StationKeepBurnAp.Element2 = 0;
+GMAT StationKeepBurnAp.Element3 = 0;
+GMAT StationKeepBurnAp.DecrementMass = false;
+GMAT StationKeepBurnAp.Isp = 300;
+GMAT StationKeepBurnAp.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem MarsInertial;
+GMAT MarsInertial.Origin = Mars;
+GMAT MarsInertial.Axes = BodyInertial;
+
+Create CoordinateSystem SunElliptic;
+GMAT SunElliptic.Origin = Sun;
+GMAT SunElliptic.Axes = MJ2000Ec;
+
+Create CoordinateSystem MarsFixed;
+GMAT MarsFixed.Origin = Mars;
+GMAT MarsFixed.Axes = BodyFixed;
+
+%----------------------------------------
+%---------- EventLocators
+%----------------------------------------
+
+Create EclipseLocator EclipseLocator1;
+GMAT EclipseLocator1.Spacecraft = SpacecraftC07;
+GMAT EclipseLocator1.Filename = 'C07EclipseData.txt';
+GMAT EclipseLocator1.OccultingBodies = {Mars};
+GMAT EclipseLocator1.InputEpochFormat = 'UTCGregorian';
+GMAT EclipseLocator1.InitialEpoch = '01 Aug 2027 11:59:28.000';
+GMAT EclipseLocator1.StepSize = 100;
+GMAT EclipseLocator1.FinalEpoch = '01 Aug 2031 15:18:11.200';
+GMAT EclipseLocator1.UseLightTimeDelay = true;
+GMAT EclipseLocator1.UseStellarAberration = false;
+GMAT EclipseLocator1.WriteReport = true;
+GMAT EclipseLocator1.RunMode = Automatic;
+GMAT EclipseLocator1.UseEntireInterval = false;
+GMAT EclipseLocator1.EclipseTypes = {'Umbra'};
+
+%----------------------------------------
+%---------- Solvers
+%----------------------------------------
+
+Create DifferentialCorrector DC1;
+GMAT DC1.ShowProgress = true;
+GMAT DC1.ReportStyle = Normal;
+GMAT DC1.ReportFile = 'DifferentialCorrectorDC1.data';
+GMAT DC1.MaximumIterations = 75;
+GMAT DC1.DerivativeMethod = ForwardDifference;
+GMAT DC1.Algorithm = NewtonRaphson;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView EarthView;
+GMAT EarthView.SolverIterations = Current;
+GMAT EarthView.UpperLeft = [ 0.2790598290598291 0.2825 ];
+GMAT EarthView.Size = [ 0.429059829059829 0.5233333333333333 ];
+GMAT EarthView.RelativeZOrder = 197;
+GMAT EarthView.Maximized = false;
+GMAT EarthView.Add = {SpacecraftC07, Earth};
+GMAT EarthView.CoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.DrawObject = [ true true ];
+GMAT EarthView.DataCollectFrequency = 1;
+GMAT EarthView.UpdatePlotFrequency = 50;
+GMAT EarthView.NumPointsToRedraw = 0;
+GMAT EarthView.ShowPlot = true;
+GMAT EarthView.MaxPlotPoints = 20000;
+GMAT EarthView.ShowLabels = true;
+GMAT EarthView.ViewPointReference = Earth;
+GMAT EarthView.ViewPointVector = [ 5000 -5000 3000 ];
+GMAT EarthView.ViewDirection = Earth;
+GMAT EarthView.ViewScaleFactor = 4;
+GMAT EarthView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT EarthView.ViewUpAxis = Z;
+GMAT EarthView.EclipticPlane = Off;
+GMAT EarthView.XYPlane = On;
+GMAT EarthView.WireFrame = Off;
+GMAT EarthView.Axes = On;
+GMAT EarthView.Grid = Off;
+GMAT EarthView.SunLine = Off;
+GMAT EarthView.UseInitialView = On;
+GMAT EarthView.StarCount = 7000;
+GMAT EarthView.EnableStars = On;
+GMAT EarthView.EnableConstellations = On;
+
+Create OrbitView SolarsystemView;
+GMAT SolarsystemView.SolverIterations = Current;
+GMAT SolarsystemView.UpperLeft = [ 0 0.43 ];
+GMAT SolarsystemView.Size = [ 0.5735042735042735 0.45 ];
+GMAT SolarsystemView.RelativeZOrder = 181;
+GMAT SolarsystemView.Maximized = false;
+GMAT SolarsystemView.Add = {SpacecraftC07, Sun, Earth, Mars};
+GMAT SolarsystemView.CoordinateSystem = SunElliptic;
+GMAT SolarsystemView.DrawObject = [ true true true true ];
+GMAT SolarsystemView.DataCollectFrequency = 1;
+GMAT SolarsystemView.UpdatePlotFrequency = 50;
+GMAT SolarsystemView.NumPointsToRedraw = 0;
+GMAT SolarsystemView.ShowPlot = true;
+GMAT SolarsystemView.MaxPlotPoints = 20000;
+GMAT SolarsystemView.ShowLabels = true;
+GMAT SolarsystemView.ViewPointReference = Sun;
+GMAT SolarsystemView.ViewPointVector = [ 0 0 700000000 ];
+GMAT SolarsystemView.ViewDirection = Sun;
+GMAT SolarsystemView.ViewScaleFactor = 1;
+GMAT SolarsystemView.ViewUpCoordinateSystem = SunElliptic;
+GMAT SolarsystemView.ViewUpAxis = Z;
+GMAT SolarsystemView.EclipticPlane = Off;
+GMAT SolarsystemView.XYPlane = On;
+GMAT SolarsystemView.WireFrame = Off;
+GMAT SolarsystemView.Axes = On;
+GMAT SolarsystemView.Grid = Off;
+GMAT SolarsystemView.SunLine = Off;
+GMAT SolarsystemView.UseInitialView = On;
+GMAT SolarsystemView.StarCount = 7000;
+GMAT SolarsystemView.EnableStars = On;
+GMAT SolarsystemView.EnableConstellations = On;
+
+Create OrbitView MarsView;
+GMAT MarsView.SolverIterations = Current;
+GMAT MarsView.UpperLeft = [ 0.3461538461538461 0 ];
+GMAT MarsView.Size = [ 0.5735042735042735 0.4166666666666667 ];
+GMAT MarsView.RelativeZOrder = 201;
+GMAT MarsView.Maximized = false;
+GMAT MarsView.Add = {SpacecraftC07, Mars, Earth, Sun};
+GMAT MarsView.CoordinateSystem = MarsInertial;
+GMAT MarsView.DrawObject = [ true true true true ];
+GMAT MarsView.DataCollectFrequency = 1;
+GMAT MarsView.UpdatePlotFrequency = 50;
+GMAT MarsView.NumPointsToRedraw = 0;
+GMAT MarsView.ShowPlot = true;
+GMAT MarsView.MaxPlotPoints = 20000;
+GMAT MarsView.ShowLabels = true;
+GMAT MarsView.ViewPointReference = Mars;
+GMAT MarsView.ViewPointVector = [ 20000 0 0 ];
+GMAT MarsView.ViewDirection = Mars;
+GMAT MarsView.ViewScaleFactor = 1;
+GMAT MarsView.ViewUpCoordinateSystem = MarsInertial;
+GMAT MarsView.ViewUpAxis = Z;
+GMAT MarsView.EclipticPlane = Off;
+GMAT MarsView.XYPlane = On;
+GMAT MarsView.WireFrame = Off;
+GMAT MarsView.Axes = On;
+GMAT MarsView.Grid = Off;
+GMAT MarsView.SunLine = On;
+GMAT MarsView.UseInitialView = On;
+GMAT MarsView.StarCount = 7000;
+GMAT MarsView.EnableStars = On;
+GMAT MarsView.EnableConstellations = On;
+
+Create ReportFile DefaultReportFile;
+GMAT DefaultReportFile.SolverIterations = Current;
+GMAT DefaultReportFile.UpperLeft = [ 0 0 ];
+GMAT DefaultReportFile.Size = [ 0 0 ];
+GMAT DefaultReportFile.RelativeZOrder = 0;
+GMAT DefaultReportFile.Maximized = false;
+GMAT DefaultReportFile.Filename = 'DefaultReportFile.txt';
+GMAT DefaultReportFile.Precision = 16;
+GMAT DefaultReportFile.WriteHeaders = true;
+GMAT DefaultReportFile.LeftJustify = On;
+GMAT DefaultReportFile.ZeroFill = Off;
+GMAT DefaultReportFile.FixedWidth = true;
+GMAT DefaultReportFile.Delimiter = ' ';
+GMAT DefaultReportFile.ColumnWidth = 23;
+GMAT DefaultReportFile.WriteReport = true;
+
+Create ReportFile StatkeepAp;
+GMAT StatkeepAp.SolverIterations = All;
+GMAT StatkeepAp.UpperLeft = [ 0 0 ];
+GMAT StatkeepAp.Size = [ 0 0 ];
+GMAT StatkeepAp.RelativeZOrder = 0;
+GMAT StatkeepAp.Maximized = false;
+GMAT StatkeepAp.Filename = 'StatkeepAp.txt';
+GMAT StatkeepAp.Precision = 16;
+GMAT StatkeepAp.WriteHeaders = true;
+GMAT StatkeepAp.LeftJustify = On;
+GMAT StatkeepAp.ZeroFill = Off;
+GMAT StatkeepAp.FixedWidth = true;
+GMAT StatkeepAp.Delimiter = ' ';
+GMAT StatkeepAp.ColumnWidth = 23;
+GMAT StatkeepAp.WriteReport = false;
+
+Create ReportFile StatkeepPer;
+GMAT StatkeepPer.SolverIterations = Current;
+GMAT StatkeepPer.UpperLeft = [ 0 0 ];
+GMAT StatkeepPer.Size = [ 0 0 ];
+GMAT StatkeepPer.RelativeZOrder = 0;
+GMAT StatkeepPer.Maximized = false;
+GMAT StatkeepPer.Filename = 'StatkeepPer.txt';
+GMAT StatkeepPer.Precision = 16;
+GMAT StatkeepPer.WriteHeaders = true;
+GMAT StatkeepPer.LeftJustify = On;
+GMAT StatkeepPer.ZeroFill = Off;
+GMAT StatkeepPer.FixedWidth = true;
+GMAT StatkeepPer.Delimiter = ' ';
+GMAT StatkeepPer.ColumnWidth = 23;
+GMAT StatkeepPer.WriteReport = true;
+
+Create ReportFile OrbitalData;
+GMAT OrbitalData.SolverIterations = Current;
+GMAT OrbitalData.UpperLeft = [ 0 0 ];
+GMAT OrbitalData.Size = [ 0 0 ];
+GMAT OrbitalData.RelativeZOrder = 0;
+GMAT OrbitalData.Maximized = false;
+GMAT OrbitalData.Filename = 'OrbitalData.txt';
+GMAT OrbitalData.Precision = 16;
+GMAT OrbitalData.Add = {SpacecraftC07.ElapsedDays, SpacecraftC07.MarsInertial.INC, SpacecraftC07.Mars.Altitude, SpacecraftC07.MarsInertial.RAAN};
+GMAT OrbitalData.WriteHeaders = true;
+GMAT OrbitalData.LeftJustify = On;
+GMAT OrbitalData.ZeroFill = Off;
+GMAT OrbitalData.FixedWidth = true;
+GMAT OrbitalData.Delimiter = ' ';
+GMAT OrbitalData.ColumnWidth = 23;
+GMAT OrbitalData.WriteReport = true;
+
+%----------------------------------------
+%---------- Arrays, Variables, Strings
+%----------------------------------------
+Create Variable TotalCorrectionDV TotalOrbits TotalStationKeepingDV CurrentOrbit StationkeepInterval statkeepApDV;
+GMAT TotalCorrectionDV = 0;
+GMAT TotalOrbits = 9000;
+GMAT TotalStationKeepingDV = 0;
+GMAT StationkeepInterval = 200;
+GMAT statkeepApDV = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Toggle OrbitalData Off;
+Propagate NearEarth(SpacecraftC07) {SpacecraftC07.Earth.Latitude = 0.0};
+Maneuver EjectionBurn(SpacecraftC07);
+Propagate NearEarth(SpacecraftC07) {SpacecraftC07.ElapsedDays = 5};
+Propagate DeepSpace(SpacecraftC07) {SpacecraftC07.ElapsedDays = 115};
+Target DC1 {SolveMode = Solve, ExitMode = SaveAndContinue, ShowProgressWindow = true};
+   Vary DC1(CorrectionBurn.Element1 = 0.03054948378081628, {Perturbation = 0.00001, Lower = -1, Upper = 1, MaxStep = 0.02, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary DC1(CorrectionBurn.Element3 = 0.01856455675394918, {Perturbation = 0.00001, Lower = -1, Upper = 1, MaxStep = 0.02, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver CorrectionBurn(SpacecraftC07);
+   Propagate DeepSpace(SpacecraftC07) {SpacecraftC07.ElapsedDays = 100};
+   Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Periapsis};
+   Achieve DC1(SpacecraftC07.Mars.Altitude = 200, {Tolerance = 0.01});
+   Achieve DC1(SpacecraftC07.MarsInertial.INC = 80, {Tolerance = 0.001});
+EndTarget;  % For targeter DC1
+GMAT TotalCorrectionDV = (CorrectionBurn.Element1^2 + CorrectionBurn.Element2^2 + CorrectionBurn.Element3^2)^0.5;
+Target DC1 {SolveMode = Solve, ExitMode = DiscardAndContinue, ShowProgressWindow = true};
+   Vary DC1(MarsCapture.Element1 = -1.657596745260594, {Perturbation = 0.0001, Lower = -3, Upper = 3.14159, MaxStep = 0.2, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver MarsCapture(SpacecraftC07);
+   Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Apoapsis};
+   Achieve DC1(SpacecraftC07.Mars.Altitude = 5000, {Tolerance = 0.01});
+EndTarget;  % For targeter DC1
+Toggle OrbitalData On;
+For CurrentOrbit = 1:1:TotalOrbits;
+   Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Periapsis};
+   If SpacecraftC07.Mars.Altitude >= 210 | SpacecraftC07.Mars.Altitude <= 190
+      Target DC1 {SolveMode = Solve, ExitMode = DiscardAndContinue, ShowProgressWindow = true};
+         Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Apoapsis};
+         Vary DC1(StationKeepBurnAp.Element1 = 0, {Perturbation = 0.000001, Lower = -0.1, Upper = 0.1, MaxStep = 0.5, AdditiveScaleFactor = 0, MultiplicativeScaleFactor = 1.0});
+         Maneuver StationKeepBurnAp(SpacecraftC07);
+         Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Periapsis};
+         Achieve DC1(SpacecraftC07.Mars.Altitude = 200, {Tolerance = 0.01});
+      EndTarget;  % For targeter DC1
+      Report StatkeepAp StationKeepBurnAp.Element1;
+      GMAT TotalStationKeepingDV = TotalStationKeepingDV + abs(StationKeepBurnAp.Element1);
+   EndIf;
+   Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Apoapsis};
+   If SpacecraftC07.Mars.Altitude < 4975 | SpacecraftC07.Mars.Altitude > 5025
+      Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Periapsis};
+      Target DC1 {SolveMode = Solve, ExitMode = DiscardAndContinue, ShowProgressWindow = true};
+         Vary DC1(StationKeepBurnPer.Element1 = 0, {Perturbation = 0.0001, Lower = -0.1, Upper = 0.1, MaxStep = 0.0005, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+         Maneuver StationKeepBurnPer(SpacecraftC07);
+         Propagate NearMars(SpacecraftC07) {SpacecraftC07.Mars.Apoapsis};
+         Achieve DC1(SpacecraftC07.Mars.Altitude = 5000, {Tolerance = 0.001});
+      EndTarget;  % For targeter DC1
+      Report StatkeepPer StationKeepBurnPer.Element1;
+      GMAT TotalStationKeepingDV = TotalStationKeepingDV + abs(StationKeepBurnPer.Element1);
+   EndIf;
+EndFor;
+Report DefaultReportFile SpacecraftC07.Mars.Altitude EjectionBurn.Element1 TotalCorrectionDV MarsCapture.Element1 TotalStationKeepingDV;
