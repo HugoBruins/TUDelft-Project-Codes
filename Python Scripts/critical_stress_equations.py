@@ -8,7 +8,7 @@ def area(r, t_1):
     return math.pi*((r+t_1)**2-r**2)
 
 def poisson(p, E, R, t_1):
-    return(p/E)*(R/t_1)**2
+    return (p/E)*(R/t_1)**2
 
 def Q(p, E, R, t_1):
     return p/E*(R/t_1)**2
