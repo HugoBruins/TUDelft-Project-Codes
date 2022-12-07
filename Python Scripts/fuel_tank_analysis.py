@@ -14,15 +14,19 @@ class Fueltank():
         # Get the mass
         pass
     
-
-class BeamAttachment():
-    def __init__(self, material):
+  
+# For now it is just a thin walled square for easy
+class Beam():
+    def __init__(self, b, t, L, material):
         # Calculate Ixx
+        self.Ixx = 2/3 * b**3 * t
+        self.A = 4*b*t
         
-        # Calculate spring constant lateral
+        # lateral spring constant
+        self.klat = 3*material.E*self.Ixx/L**3
         
-        # Calculate spring constant axial
-        pass
+        # axial spring constant
+        self.kaxial = self.A*material.E / L
         
 class FuelTankAssembly():
     def __init__(self, material):
@@ -38,7 +42,7 @@ class FuelTankAssembly():
         pass
 
     def get_total_mass(self):
-        pass\
+        pass
             
 hydrazine_fuel_tank = Fueltank()
 
@@ -51,3 +55,7 @@ MGA231B  = Material(45e9, 220e6, 1700, 0.33)    # magnesium alloy
 BES65A   = Material(304e9, 207e6, 2000, 0.33)   # berrylium alloy (very non toxic!)
 AM350    = Material(200e9, 1034e6, 7700, 0.33)  # ferrous alloy
 
+# a beam
+square_beam = Beam(0.1, 1e-3, 1, AL6061T6)
+print(square_beam.Ixx)
+print(square_beam.klat)
