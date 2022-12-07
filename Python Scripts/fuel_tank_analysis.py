@@ -1,3 +1,6 @@
+import math
+import numpy as np
+
 class Material():
     def __init__(self, E, sigma_y, alpha, v):
         # Save all the properties
@@ -15,7 +18,7 @@ class BeamAttachment():
         
         # Calculate spring constant lateral
         
-        # Claculate spring constant axial
+        # Calculate spring constant axial
         pass
         
 class FuelTankAssembly():
