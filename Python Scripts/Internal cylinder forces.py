@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
-resolution = 1000
+resolution = 10
+thickness_amount=10    #amount of thickness used in calculations
 
 # Axial and lateral acceleration
 a_axial = 6*9.81
@@ -64,7 +66,6 @@ Mx = calculate_internal_moment(z)
 theta = calculate_thetaEI(z)
 v = calculate_vEI(z)
 
-
 # plt.subplot(511)
 # plt.plot(z,N, label="Internal normal force")
 # plt.legend()
@@ -85,3 +86,42 @@ v = calculate_vEI(z)
 # plt.plot(z,v, label="v*E*Ixx")
 # plt.legend()
 # plt.grid()
+# plt.show()
+
+
+#Internal Stress Calculations:
+
+sigma_yield=241E9   #Normal Yield strength of material
+tau_yield=207E6     #Shear Strength of material
+E=68E9          #Young's Modulus of material
+rho=2720           #Density of material
+
+t=0
+dt=0.001
+sigma_z_max=sigma_yield+1
+tau_z_max=tau_yield+1
+while (abs(sigma_z_max)>=sigma_yield or abs(tau_z_max)>=tau_yield or abs(sigma_z_max)>=sigma_cr) and t<0.5:
+    t+=dt
+    
+    #normal stress check
+    sigma_z_normal=N/(2*math.pi*r*t)
+    sigma_z_bending=64*Mx/(math.pi*t*r**2)
+    sigma_z=sigma_z_normal+sigma_z_bending
+    sigma_z_max=max(sigma_z)
+    
+    #shear stress check
+    tau_z=t*Vy*64/(math.pi*r)
+    tau_z_max=max(tau_z)
+    
+    #buckling check
+    Ixx=math.pi*(2*r)**3*t/8
+    r_gyr=math.sqrt(Ixx/(2*math.pi*r*t))
+    sigma_cr=(math.pi)**2*E/((0.5*3/r_gyr)**2)
+    
+if t>=0.5:
+    print("material incompatible with design, thickness becomes unrealistic")
+else:
+    print("thickness required is:",t)
+    
+mass=rho*3*2*math.pi*r*t
+print("with this thickness and material, the mass of the cylinder becomes:",mass)
