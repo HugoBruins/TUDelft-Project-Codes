@@ -106,16 +106,18 @@ v = calculate_vEI(z)
 
 
 #Internal Stress Calculations:
+sigma_yield=1034E6   #Normal Yield strength of material
+tau_yield=sigma_yield/math.sqrt(3)     #Shear Strength of material
+E=200E9          #Young's Modulus of material
+rho=7700         #Density of material
+poisson=1/3
+Safety_Factor=1.5
 
-sigma_yield=241E6   #Normal Yield strength of material
-tau_yield=207E6     #Shear Strength of material
-E=68E9          #Young's Modulus of material
-rho=2720           #Density of material
-
-t=0
-dt=0.001
+t=0.00024
+dt=0.0000001
 sigma_z_max=sigma_yield+1
 tau_z_max=tau_yield+1
+sigma_cr=sigma_z_max+1
 while (abs(sigma_z_max)>=sigma_yield \
        or abs(tau_z_max)>=tau_yield \
        or abs(sigma_z_max)>=sigma_cr) and t<0.5:
@@ -123,23 +125,22 @@ while (abs(sigma_z_max)>=sigma_yield \
     
     #normal stress check
     sigma_z_normal=N/(2*math.pi*r*t)
-    sigma_z_bending=64*Mx/(math.pi*t*r**2)
+    sigma_z_bending=Mx/(math.pi*t*r**2)
     sigma_z=sigma_z_normal+sigma_z_bending
-    sigma_z_max=max(sigma_z)
-    
+    sigma_z_max=max(sigma_z)*Safety_Factor
+
     #shear stress check
     tau_z=t*Vy*64/(math.pi*r)
-    tau_z_max=max(tau_z)
+    tau_z_max=max(tau_z)*Safety_Factor
     
     #buckling check
-    Ixx=math.pi*(2*r)**3*t/8
-    r_gyr=math.sqrt(Ixx/(2*math.pi*r*t))
-    sigma_cr=(math.pi)**2*E/((0.5*3/r_gyr)**2)
+    phi=1/16*math.sqrt(r/t)
+    gamma=1-0.901*(1-math.exp(-phi))
+    sigma_cr=gamma*E/(math.sqrt(3*(1-poisson**2)))*t/r
     
 if t>=0.5:
     print("material incompatible with design, thickness becomes unrealistic")
 else:
-    print("thickness required is:",t)
-    
-mass=rho*3*2*math.pi*r*t
-print("with this thickness and material, the mass of the cylinder becomes:",mass)
+    print("thickness required is:",round(t*1000,6),"mm")
+    mass=rho*3*2*math.pi*r*t
+    print("with this thickness and material, the mass of the cylinder becomes:",mass)
