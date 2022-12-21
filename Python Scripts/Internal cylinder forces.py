@@ -2,18 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-resolution = 10
+resolution = 1000
 thickness_amount=10    #amount of thickness used in calculations
 
 # Axial and lateral acceleration
 a_axial = 6*9.81
 a_lateral = 2*9.81
 
-m1 = 700 # mass first fuel tank
-m2 = 500 # mass second fuel tank
-L = 3    # length cilinder
-r = 0.3  # radius cilinder
-a = 0.3  # distance from the first tank to the wall
+total_length_tanks = 2.327  # total length of the tanks next to each other
+r = 0.352                   # radius fuel tank
+m1 = 500.3 + 9.05/2         # mass first fuel tank (N2O4)
+m2 = 303.2 + 9.95/2         # mass second fuel tank (MMH)
+L = 3                       # length cilinder
+a0 = 0                      # distance of the first tank to the floor
+
+length_single_tank = total_length_tanks/2
+a = a0 + length_single_tank/2
+b = a + length_single_tank
 
 # Forces caused by acceleration
 P1z = a_axial*m1
@@ -28,31 +33,31 @@ z = np.linspace(0, L, resolution)
 A = np.array([[L**2/2, L],
               [L**3/6, L**2/2]])
 A_inverse = np.linalg.inv(A)
-junk = np.array([P1y/2 * (L-a)**2 + P2y/2 * (L-a-2*r)**2, 
-                 P1y/6 * (L-a)**3 + P2y/6 * (L-a-2*r)**3])
+junk = np.array([P1y/2 * (L-a)**2 + P2y/2 * (L-b)**2, 
+                 P1y/6 * (L-a)**3 + P2y/6 * (L-b)**3])
 V = A_inverse.dot(junk)
 Ay = V[0]
 MA = V[1]
 
 # Calculating the internal normal force as a function of z
 def calculate_normal_force(z):
-    force =     P1z*(1-a/L) + P2z*(1-(a+2*r)/L) \
+    force =     P1z*(1-a/L) + P2z*(1-b/L) \
                 - P1z*(z-a)**0*np.heaviside(z-a, 0) \
-                - P2z*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
+                - P2z*(z-b)**0*np.heaviside(z-b, 0)
     return force
 
 # Calculating the internal shear force as a function of z
 def calculate_shear_force(z):
     force =     Ay \
                 - P1y*(z-a)**0*np.heaviside(z-a, 0) \
-                - P2y*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
+                - P2y*(z-b)**0*np.heaviside(z-b, 0)
     return force
 
 # Calculating the internal moment about x axis as a function of z
 def calculate_internal_moment(z):
     moment =    MA + Ay*z \
                 - P1y*(z-a)**1*np.heaviside(z-a, 0) \
-                - P2y*(z-a-2*r)**1*np.heaviside(z-a-2*r, 0)
+                - P2y*(z-b)**1*np.heaviside(z-b, 0)
     return moment
 
 # Calculating the theta as a function of z, to get actual theta multiply this
@@ -60,7 +65,7 @@ def calculate_internal_moment(z):
 def calculate_thetaEI(z):
     theta = MA*z + 0.5*Ay*z**2 \
             - 0.5*P1y*(z-a)**2*np.heaviside(z-a, 0) \
-            - 0.5*P2y*(z-a-2*r)**2*np.heaviside(z-a-2*r, 0)
+            - 0.5*P2y*(z-b)**2*np.heaviside(z-b, 0)
     return -theta
 
 # Calculating the deflection as a function of z, to get actual deflection
@@ -68,7 +73,7 @@ def calculate_thetaEI(z):
 def calculate_vEI(z):
     v = 0.5*MA*z**2 + 1/6*Ay*z**3 \
         - 1/6*P1y*(z-a)**3*np.heaviside(z-a, 0) \
-        - 1/6*P2y*(z-a-2*r)**3*np.heaviside(z-a-2*r, 0)
+        - 1/6*P2y*(z-b)**3*np.heaviside(z-b, 0)
     return -v
 
 N = calculate_normal_force(z)
