@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-resolution = 1000
-thickness_amount=10    #amount of thickness used in calculations
+resolution = 1000      # the amount of datapoints to consider
+thickness_amount=10    # amount of thickness used in calculations
 
 # Axial and lateral acceleration
-a_axial = 6*9.81
+a_axial = -6*9.81
 a_lateral = 2*9.81
 
 total_length_tanks = 2.327  # total length of the tanks next to each other
@@ -29,7 +29,10 @@ P2y = a_lateral*m2
 
 z = np.linspace(0, L, resolution)
 
-# Getting the first force and moment due to compatibility
+# Getting Az as calculated
+Az = P1z*(1-a/L) + P2z*(1-b/L)
+
+# Getting Ay and MA as explained in report
 A = np.array([[L**2/2, L],
               [L**3/6, L**2/2]])
 A_inverse = np.linalg.inv(A)
@@ -41,10 +44,16 @@ MA = V[1]
 
 # Calculating the internal normal force as a function of z
 def calculate_normal_force(z):
-    force =     P1z*(1-a/L) + P2z*(1-b/L) \
+    force =     Az \
                 - P1z*(z-a)**0*np.heaviside(z-a, 0) \
                 - P2z*(z-b)**0*np.heaviside(z-b, 0)
     return force
+
+def calculate_relative_axial_deflection(z):
+    delta =     Az*z \
+                - P1z*(z-a)**1*np.heaviside(z-a, 0) \
+                - P2z*(z-b)**1*np.heaviside(z-b, 0)
+    return delta
 
 # Calculating the internal shear force as a function of z
 def calculate_shear_force(z):
@@ -77,32 +86,37 @@ def calculate_vEI(z):
     return -v
 
 N = calculate_normal_force(z)
+delta = calculate_relative_axial_deflection(z)
 Vy = calculate_shear_force(z)
 Mx = calculate_internal_moment(z)
 theta = calculate_thetaEI(z)
 v = calculate_vEI(z)
 
-# plt.subplot(511)
-# plt.plot(z,N, label="Internal normal force")
-# plt.legend()
-# plt.grid()
-# plt.subplot(512)
-# plt.plot(z,Vy, label="Internal Vy")
-# plt.legend()
-# plt.grid()
-# plt.subplot(513)
-# plt.plot(z,Mx, label="Internal Mx")
-# plt.legend()
-# plt.grid()
-# plt.subplot(514)
-# plt.plot(z,theta, label="Theta*E*Ixx")
-# plt.legend()
-# plt.grid()
-# plt.subplot(515)
-# plt.plot(z,v, label="v*E*Ixx")
-# plt.legend()
-# plt.grid()
-# plt.show()
+plt.subplot(611)
+plt.plot(z,N, label="Internal normal force [N]")
+plt.legend()
+plt.grid()
+plt.subplot(612)
+plt.plot(z,delta, label="A*E*δ [Nm]")
+plt.legend()
+plt.grid()
+plt.subplot(613)
+plt.plot(z,Vy, label="Internal Vy [N]")
+plt.legend()
+plt.grid()
+plt.subplot(614)
+plt.plot(z,Mx, label="Internal Mx [Nm]")
+plt.legend()
+plt.grid()
+plt.subplot(615)
+plt.plot(z,theta, label="Theta*E*Ixx [Nm^2]")
+plt.legend()
+plt.grid()
+plt.subplot(616)
+plt.plot(z,v, label="v*E*Ixx [Nm^3]")
+plt.legend()
+plt.grid()
+plt.show()
 
 
 #Internal Stress Calculations:
