@@ -25,39 +25,50 @@ P2y = a_lateral*m2
 z = np.linspace(0, L, resolution)
 
 # Getting the first force and moment due to compatibility
-A = np.array([[L**2/2, L],[L**3/6, L**2/2]])
+A = np.array([[L**2/2, L],
+              [L**3/6, L**2/2]])
 A_inverse = np.linalg.inv(A)
-junk = np.array([P1y/2 * (L-a)**2 + P2y/2 * (L-a-2*r)**2, P1y/6 * (L-a)**3 + P2y/6 * (L-a-2*r)**3])
+junk = np.array([P1y/2 * (L-a)**2 + P2y/2 * (L-a-2*r)**2, 
+                 P1y/6 * (L-a)**3 + P2y/6 * (L-a-2*r)**3])
 V = A_inverse.dot(junk)
 Ay = V[0]
 MA = V[1]
 
 # Calculating the internal normal force as a function of z
 def calculate_normal_force(z):
-    force = P1z*(1-a/L) + P2z*(1-(a+2*r)/L) - P1z*(z-a)**0*np.heaviside(z-a, 0) - P2z*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
+    force =     P1z*(1-a/L) + P2z*(1-(a+2*r)/L) \
+                - P1z*(z-a)**0*np.heaviside(z-a, 0) \
+                - P2z*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
     return force
 
 # Calculating the internal shear force as a function of z
 def calculate_shear_force(z):
-    force = Ay - P1y*(z-a)**0*np.heaviside(z-a, 0) - P2y*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
+    force =     Ay \
+                - P1y*(z-a)**0*np.heaviside(z-a, 0) \
+                - P2y*(z-a-2*r)**0*np.heaviside(z-a-2*r, 0)
     return force
 
 # Calculating the internal moment about x axis as a function of z
 def calculate_internal_moment(z):
-    moment = MA + Ay*z - P1y*(z-a)**1*np.heaviside(z-a, 0) - P2y*(z-a-2*r)**1*np.heaviside(z-a-2*r, 0)
+    moment =    MA + Ay*z \
+                - P1y*(z-a)**1*np.heaviside(z-a, 0) \
+                - P2y*(z-a-2*r)**1*np.heaviside(z-a-2*r, 0)
     return moment
 
 # Calculating the theta as a function of z, to get actual theta multiply this
 # by stiffness E*I
 def calculate_thetaEI(z):
-    theta = MA*z + 0.5*Ay*z**2 - 0.5*P1y*(z-a)**2*np.heaviside(z-a, 0) - 0.5*P2y*(z-a-2*r)**2*np.heaviside(z-a-2*r, 0)
+    theta = MA*z + 0.5*Ay*z**2 \
+            - 0.5*P1y*(z-a)**2*np.heaviside(z-a, 0) \
+            - 0.5*P2y*(z-a-2*r)**2*np.heaviside(z-a-2*r, 0)
     return -theta
 
 # Calculating the deflection as a function of z, to get actual deflection
 # multiply this by stiffness E*I
-
 def calculate_vEI(z):
-    v = 0.5*MA*z**2 + 1/6*Ay*z**3 - 1/6*P1y*(z-a)**3*np.heaviside(z-a, 0) - 1/6*P2y*(z-a-2*r)**3*np.heaviside(z-a-2*r, 0)
+    v = 0.5*MA*z**2 + 1/6*Ay*z**3 \
+        - 1/6*P1y*(z-a)**3*np.heaviside(z-a, 0) \
+        - 1/6*P2y*(z-a-2*r)**3*np.heaviside(z-a-2*r, 0)
     return -v
 
 N = calculate_normal_force(z)
@@ -91,7 +102,7 @@ v = calculate_vEI(z)
 
 #Internal Stress Calculations:
 
-sigma_yield=241E9   #Normal Yield strength of material
+sigma_yield=241E6   #Normal Yield strength of material
 tau_yield=207E6     #Shear Strength of material
 E=68E9          #Young's Modulus of material
 rho=2720           #Density of material
@@ -100,7 +111,9 @@ t=0
 dt=0.001
 sigma_z_max=sigma_yield+1
 tau_z_max=tau_yield+1
-while (abs(sigma_z_max)>=sigma_yield or abs(tau_z_max)>=tau_yield or abs(sigma_z_max)>=sigma_cr) and t<0.5:
+while (abs(sigma_z_max)>=sigma_yield \
+       or abs(tau_z_max)>=tau_yield \
+       or abs(sigma_z_max)>=sigma_cr) and t<0.5:
     t+=dt
     
     #normal stress check
